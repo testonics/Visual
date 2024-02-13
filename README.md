@@ -109,13 +109,13 @@ To save result image, can be used two ways:
 ## Demo
 Demo shows how `Visual` works.
 
-### Expected Image
+#### Expected Image
 ![expected](src/test/resources/TestData/ImageExpected.png)
 
-### Actual Image
+#### Actual Image
 ![actual](src/test/resources/TestData/ImageActual.png)
 
-### Result
+#### Result
 ![result](src/test/resources/TestData/ImageResult.png)
 
 ## Code of Conduct
