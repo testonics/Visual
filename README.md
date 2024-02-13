@@ -110,13 +110,13 @@ To save result image, can be used two ways:
 Demo shows how `Visual` works.
 
 ### Expected Image
-![expected](https://github.com/testonics/Visual/tree/master/src/test/resources/TestData/ImageExpected.png)
+![expected](src/test/resources/TestData/ImageExpected.png)
 
 ### Actual Image
-![actual](https://github.com/testonics/Visual/tree/master/src/test/resources/TestData/ImageActual.png)
+![actual](src/test/resources/TestData/ImageActual.png)
 
 ### Result
-![result](https://github.com/testonics/Visual/tree/master/src/test/resources/TestData/ImageResult.png)
+![result](src/test/resources/TestData/ImageResult.png)
 
 ## Code of Conduct
 Please, follow [Code of Conduct](CODE_OF_CONDUCT.md) page.
