@@ -11,8 +11,8 @@ public class VisualCompareTest {
     public void main() throws Exception {
 
         OmniImage omniImage = new OmniImage();
-        File file1 = new File(".\\src\\test\\resources\\TestData\\ImageActual.jpg");
-        File file2 = new File(".\\src\\test\\resources\\TestData\\ImageExpected.jpg");
+        File file1 = new File(".\\src\\test\\resources\\TestData\\ImageExpected.png");
+        File file2 = new File(".\\src\\test\\resources\\TestData\\ImageActual.png");
         System.out.println(omniImage.compare(file1,file2));
     }
 
