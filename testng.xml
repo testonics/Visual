@@ -1,0 +1,9 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
+
+<suite name="testngSuite" verbose="1">
+    <test name="restassured">
+        <classes>
+            <class name="TestTestng.API.TestEndpoints"/>
+        </classes>
+    </test>
+</suite>

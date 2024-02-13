@@ -1,0 +1,11 @@
+{
+	"appiumVersion":"1.17.1",
+	"platformVersion":"10",
+	"deviceName":"Samsung.*",
+	"platformName":"android",
+	"noReset":"true",
+	"idleTimeout":"90",
+	"newCommandTimeout":"90",
+	"name":"androidTest",
+	"app":"storage:cbbdfe53-e55e-4dcf-a7b1-ba402e243b8d"
+}
