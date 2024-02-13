@@ -1,0 +1,16 @@
+{
+  "id": "390",
+  "data": {
+    "leagueId": 35,
+    "homeTeam": "Norway",
+    "visitingTeam": "England",
+  },
+  "odds": [{
+    "price": "1.30",
+    "name": "1"
+  },
+    {
+      "price": "5.25",
+      "name": "X"
+    }]
+}
