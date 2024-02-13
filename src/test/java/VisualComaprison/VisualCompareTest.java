@@ -1,5 +1,6 @@
 package VisualComaprison;
 
+import in.testonics.omni.image.model.Image;
 import in.testonics.omni.models.OmniImage;
 import org.junit.Test;
 
@@ -14,6 +15,7 @@ public class VisualCompareTest {
         File file1 = new File(".\\src\\test\\resources\\TestData\\ImageExpected.png");
         File file2 = new File(".\\src\\test\\resources\\TestData\\ImageActual.png");
         System.out.println(omniImage.compare(file1,file2));
+        System.out.println(Image.getImageText(".\\src\\test\\resources\\TestData\\ImageExpected.png"));
     }
 
 }

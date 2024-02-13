@@ -6,6 +6,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Data transfer objects which contains all the needed data for result of the comparison.
@@ -43,6 +44,11 @@ public class VisualComparisonResult {
     private List<Rectangle> rectangles;
 
     /**
+     * Map of the differences
+     */
+    private Map<String,String> mapMismatch;
+
+    /**
      * Create default instance of the {@link VisualComparisonResult} with {@link VisualComparisonState#SIZE_MISMATCH}.
      *
      * @param expected          expected {@link BufferedImage} object.
@@ -51,14 +57,15 @@ public class VisualComparisonResult {
      * @return instance of the {@link VisualComparisonResult} object.
      */
     public static VisualComparisonResult defaultSizeMisMatchResult(BufferedImage expected, BufferedImage actual,
-                                                                   float differencePercent) {
+                                                                   float differencePercent, Map<String,String> mapMismatch) {
         return new VisualComparisonResult()
                 .setImageComparisonState(VisualComparisonState.SIZE_MISMATCH)
                 .setDifferencePercent(differencePercent)
                 .setExpected(expected)
                 .setActual(actual)
                 .setResult(actual)
-                .setRectangles(Collections.emptyList());
+                .setRectangles(Collections.emptyList())
+                .setMismatch(mapMismatch);
     }
 
     /**
@@ -69,13 +76,14 @@ public class VisualComparisonResult {
      * @param differencePercent the persent of the differences between images.
      * @return instance of the {@link VisualComparisonResult} object.
      */
-    public static VisualComparisonResult defaultMisMatchResult(BufferedImage expected, BufferedImage actual, float differencePercent) {
+    public static VisualComparisonResult defaultMisMatchResult(BufferedImage expected, BufferedImage actual, float differencePercent, Map<String,String> mapMismatch) {
         return new VisualComparisonResult()
                 .setImageComparisonState(VisualComparisonState.MISMATCH)
                 .setDifferencePercent(differencePercent)
                 .setExpected(expected)
                 .setActual(actual)
-                .setResult(actual);
+                .setResult(actual)
+                .setMismatch(mapMismatch);
     }
 
     /**
@@ -85,13 +93,14 @@ public class VisualComparisonResult {
      * @param actual   actual {@link BufferedImage} object.
      * @return instance of the {@link VisualComparisonResult} object.
      */
-    public static VisualComparisonResult defaultMatchResult(BufferedImage expected, BufferedImage actual) {
+    public static VisualComparisonResult defaultMatchResult(BufferedImage expected, BufferedImage actual, Map<String,String> mapMismatch) {
         return new VisualComparisonResult()
                 .setImageComparisonState(VisualComparisonState.MATCH)
                 .setExpected(expected)
                 .setActual(actual)
                 .setResult(actual)
-                .setRectangles(Collections.emptyList());
+                .setRectangles(Collections.emptyList())
+                .setMismatch(mapMismatch);
     }
 
     /**
@@ -157,5 +166,14 @@ public class VisualComparisonResult {
     public VisualComparisonResult setRectangles(List<Rectangle> rectangles) {
         this.rectangles = rectangles;
         return this;
+    }
+
+    VisualComparisonResult setMismatch(Map<String,String> mapMismatch) {
+        this.mapMismatch = mapMismatch;
+        return this;
+    }
+
+    public Map<String,String> getMismatch() {
+        return mapMismatch;
     }
 }

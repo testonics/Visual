@@ -1,15 +1,11 @@
 package in.testonics.omni.image;
 
 import in.testonics.omni.image.model.ExcludedAreas;
+import in.testonics.omni.image.model.Image;
 import in.testonics.omni.image.model.VisualComparisonResult;
 import in.testonics.omni.image.model.VisualComparisonState;
 import in.testonics.omni.image.model.Rectangle;
-import in.testonics.omni.utils.DateUtils;
-import net.sourceforge.tess4j.ITesseract;
-import net.sourceforge.tess4j.Tesseract;
-import net.sourceforge.tess4j.TesseractException;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -154,9 +150,19 @@ public class VisualComparison {
     private Color excludedRectangleColor = Color.GREEN;
 
     /**
+     * Sets Image resize is required or not. By default, it's false.
+     */
+    private boolean imageResizeFlag = false;
+
+    /**
      * Sets Image Resolution. By default, it's 70.
      */
-    private int defaultImageResolution = 70;
+    private int imageResolution = 70;
+
+    /**
+     * Sets the image text mismatches.
+     */
+    private Map<String,String> mapMismatch = new HashMap<>();
 
     /**
      * Create a new instance of {@link VisualComparison} that can compare the given images.
@@ -200,17 +206,14 @@ public class VisualComparison {
      * @return the result of the drawing.
      */
     public VisualComparisonResult compareImages() {
-        return compareImages(false);
-    }
-    public VisualComparisonResult compareImages(boolean resize) {
 
         // check that the images have the same size
         if (isImageSizesNotEqual(expected, actual)) {
             BufferedImage actualResized = VisualComparisonUtil.resize(actual, expected.getWidth(), expected.getHeight());
-            if (resize){
+            if (imageResizeFlag){
                 actual = actualResized;
             }else {
-                return VisualComparisonResult.defaultSizeMisMatchResult(expected, actual, getDifferencePercent(actualResized, expected));
+                return VisualComparisonResult.defaultSizeMisMatchResult(expected, actual, getDifferencePercent(actualResized, expected),mapMismatch);
             }
 
         }
@@ -218,7 +221,7 @@ public class VisualComparison {
         List<Rectangle> rectangles = populateRectangles();
 
         if (rectangles.isEmpty()) {
-            VisualComparisonResult matchResult = VisualComparisonResult.defaultMatchResult(expected, actual);
+            VisualComparisonResult matchResult = VisualComparisonResult.defaultMatchResult(expected, actual,mapMismatch);
             if (drawExcludedRectangles) {
                 matchResult.setResult(drawRectangles(rectangles));
                 saveImageForDestination(matchResult.getResult());
@@ -228,7 +231,7 @@ public class VisualComparison {
 
         BufferedImage resultImage = drawRectangles(rectangles);
         saveImageForDestination(resultImage);
-        return VisualComparisonResult.defaultMisMatchResult(expected, actual, getDifferencePercent(actual, expected))
+        return VisualComparisonResult.defaultMisMatchResult(expected, actual, getDifferencePercent(actual, expected),mapMismatch)
                 .setResult(resultImage)
                 .setRectangles(rectangles);
     }
@@ -407,14 +410,7 @@ public class VisualComparison {
         BufferedImage resultImage = VisualComparisonUtil.deepCopy(actual);
 
         //Save the failed area as a new file and extracts the text
-        for(Rectangle rectangle: rectangles){
-            String subImageActual = getSubImage(rectangle, actual);
-            String subImageExpected = getSubImage(rectangle, expected);
-            String imageTextActual = getImageText(subImageActual);
-            String imageTextExpected = getImageText(subImageExpected);
-            System.out.println("Expected Text : " + imageTextExpected);
-            System.out.println("Actual Text : " + imageTextActual);
-        }
+        compareText(rectangles);
 
         Graphics2D graphics = preparedGraphics2D(resultImage);
 
@@ -425,62 +421,22 @@ public class VisualComparison {
     }
 
     /**
-     * Gets the text from an image
+     * Draw the rectangles based on collection of the rectangles and result image.
      *
-     * @param imagePath : path of the image
-     * @return imageText : Text extracted from the image
+     * @param rectangles the collection of the {@link Rectangle} objects.
+     * @return result {@link BufferedImage} with drawn rectangles.
      */
-    private String getImageText(String imagePath){
-
-        if(imagePath.equals("")){
-            return "Invalid image path : " + imagePath;
+    private void compareText(List<Rectangle> rectangles) {
+        //Save the failed area as a new file and extracts the text
+        for(Rectangle rectangle: rectangles){
+            Image.imageResolution = this.imageResolution;
+            String subImageActual = Image.getSubImage(rectangle, actual);
+            String subImageExpected = Image.getSubImage(rectangle, expected);
+            String imageTextActual = Image.getImageText(subImageActual);
+            String imageTextExpected = Image.getImageText(subImageExpected);
+            mapMismatch.put(subImageActual,"Expected : " + imageTextExpected + " | " + "Actual : " + imageTextActual);
         }
-
-        String imageText = "";
-        File imageFile = new File(imagePath);
-        ITesseract instance = new Tesseract();  // JNA Interface Mapping
-        instance.setDatapath(".\\src\\main\\resources\\language"); // replace with your tessdata path
-        instance.setTessVariable("user_defined_dpi", String.valueOf(defaultImageResolution)); //sets the resolution
-
-        //Handling Multiple Language
-        //instance.setLanguage("fra"); // for French
-        //Download the language file
-        // https://github.com/tesseract-ocr/tessdata/blob/main/eng.traineddata
-
-        try {
-            imageText = instance.doOCR(imageFile);
-        } catch (TesseractException e) {
-            System.err.println(e.getMessage());
-        }
-        return imageText;
     }
-
-    /**
-     * Gets the subimage from an image based on rectangle co-ordinates.
-     *
-     * @param rectangle : The rectangle objects.
-     * @return result {@link BufferedImage} Sub Image extracted based on rectangle
-     */
-    private String getSubImage(Rectangle rectangle, BufferedImage image){
-        String subImagePath = "";
-        int x = rectangle.getMinPoint().x;
-        int y = rectangle.getMinPoint().y;
-        int w = rectangle.getMaxPoint().x - rectangle.getMinPoint().x;
-        int h = rectangle.getMaxPoint().y - rectangle.getMinPoint().y;
-        if (w>0 && h>0){
-            try{
-                Random rand = new Random();
-                subImagePath = ".\\target\\" + w + "-" + y + "_" + new DateUtils().getTimeStamp() + rand.nextInt(1000) + ".png";
-                BufferedImage subImage = image.getSubimage(x,y,w,h);
-                ImageIO.write(subImage, "png", new File(subImagePath));
-            }catch (Exception e){
-                subImagePath = "";
-                System.err.println(e.getMessage());
-            }
-        }
-        return subImagePath;
-    }
-
 
     /**
      * Draw excluded rectangles.
@@ -788,5 +744,19 @@ public class VisualComparison {
     public VisualComparison setExcludedRectangleColor(Color excludedRectangleColor) {
         this.excludedRectangleColor = excludedRectangleColor;
         return this;
+    }
+
+    public VisualComparison setResizeImage(boolean imageResizeFlag) {
+        this.imageResizeFlag = imageResizeFlag;
+        return this;
+    }
+
+    public VisualComparison setImageResolution(int imageResolution) {
+        this.imageResolution = imageResolution;
+        return this;
+    }
+
+    public Map<String,String> getImageTextMismatch() {
+        return this.mapMismatch;
     }
 }

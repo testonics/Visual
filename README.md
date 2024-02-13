@@ -44,6 +44,8 @@ All these configurations can be updated based on your needs.
 | `allowingPercentOfDifferentPixels` | The percent of the allowing pixels to be different to stay MATCH for comparison. E.g. percent of the pixels, which would ignore in comparison. Value can be from 0.0 to 100.00 |
 | `differenceRectangleColor` | Rectangle color of image difference. By default, it's red. |
 | `excludedRectangleColor` | Rectangle color of excluded part. By default, it's green. |
+| `imageResizeFlag` | Resize the image equal to expected image before comparison . Default to False |
+| `imageResolution` | Sets the image resolution. Default to 70 |
 
 
 ## Release Notes
@@ -108,15 +110,28 @@ To save result image, can be used two ways:
 
 ## Demo
 Demo shows how `Visual` works.
-
-#### Expected Image
+ 
+Expected Image
 ![expected](src/test/resources/TestData/ImageExpected.png)
 
-#### Actual Image
+Actual Image
 ![actual](src/test/resources/TestData/ImageActual.png)
 
-#### Result
+Result
 ![result](src/test/resources/TestData/ImageResult.png)
+
+Print the Failures To Assert
+```java
+        //Image Percentile & Text Mismatch can be printed using VisualComparisonResult.
+        System.out.println("Percentile Mismatch : " + visualComparisonResult.getDifferencePercent());
+        System.out.println("Textual Mismatch : " + visualComparisonResult.getMismatch()); 
+```
+
+Retrieves the text from an Image
+```java
+        //Image Percentile & Text Mismatch can be printed using VisualComparisonResult.
+        System.out.println(Image.getImageText("Image.png")); 
+```
 
 ## Code of Conduct
 Please, follow [Code of Conduct](CODE_OF_CONDUCT.md) page.

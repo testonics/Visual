@@ -2,6 +2,7 @@ package in.testonics.omni.models;
 
 import in.testonics.omni.image.VisualComparison;
 import in.testonics.omni.image.VisualComparisonUtil;
+import in.testonics.omni.image.model.Image;
 import in.testonics.omni.image.model.VisualComparisonResult;
 
 import java.awt.image.BufferedImage;
@@ -29,9 +30,11 @@ public class OmniImage {
         // where to save the result (leave null if you want to see the result in the UI)
         File resultDestination = new File(resultFilePath);
         //Create ImageComparison object with result destination and compare the images.
-        VisualComparisonResult visualComparisonResult = new VisualComparison(expectedImage, actualImage).compareImages(true);
+        VisualComparisonResult visualComparisonResult = new VisualComparison(expectedImage, actualImage).setResizeImage(false).compareImages();
         System.out.println("Percentile Mismatch : " + visualComparisonResult.getDifferencePercent());
+        System.out.println("Textual Mismatch : " + visualComparisonResult.getMismatch());
         //Image can be saved after comparison, using ImageComparisonUtil.
         VisualComparisonUtil.saveImage(resultDestination, visualComparisonResult.getResult());
+
     }
 }
