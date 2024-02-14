@@ -35,10 +35,6 @@ All these configurations can be updated based on your needs.
 | `imageResolution` | Sets the image resolution. Default to 70 |
 
 
-## Release Notes
-
-Can be found in [RELEASE_NOTES](RELEASE_NOTES.md).
-
 ## Usage
 
 #### Maven
@@ -120,11 +116,15 @@ Retrieves the text from an Image
         System.out.println(Image.getImageText("Image.png")); 
 ```
 
-## Code of Conduct
-Please, follow [Code of Conduct](CODE_OF_CONDUCT.md) page.
-
 ## License
 This project is Apache License 2.0 - see the [LICENSE](LICENSE) file for details
+
+## Release Notes
+
+Can be found in [RELEASE_NOTES](RELEASE_NOTES.md).
+
+## Code of Conduct
+Please, follow [Code of Conduct](CODE_OF_CONDUCT.md) page.
 
 #### Also if you're interesting - see my other repositories
 *   [Keep Alive](https://github.com/testoncis/keep-alive) - Keeps the computer awake
