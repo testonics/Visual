@@ -14,7 +14,6 @@ Published on Maven Central that compares 2 images with the same sizes and shows 
 ## Configuration
 All these configurations can be updated based on your needs.
 | *Property* | *Description* |
-
 | --- | --- |
 | `threshold` | The threshold which means the max distance between non-equal pixels. Could be changed according size and requirements to the image. |
 | `rectangleLineWidth` | Width of the line that is drawn the rectangle. |
