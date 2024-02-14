@@ -1,4 +1,4 @@
-![logo-trans]()
+![logo-trans](docs/images/Logo.png)
 
 ## About
 Published on Maven Central that compares 2 images with the same sizes and shows the differences visually by drawing rectangles. Some parts of the image can be excluded from the comparison. Can be used for automation qa tests.
