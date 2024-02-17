@@ -1,7 +1,6 @@
 package in.testonics.omni.image.model;
 
 import in.testonics.omni.utils.DateUtils;
-import net.sourceforge.tess4j.ITesseract;
 import net.sourceforge.tess4j.Tesseract;
 import net.sourceforge.tess4j.TesseractException;
 
@@ -12,10 +11,23 @@ import java.util.Random;
 
 public class Image {
 
+
     /**
      * Sets Image Resolution. By default, it's 70.
      */
     public static int imageResolution = 70;
+    /**
+     * Path of the language file to extract text
+     */
+    public static String languagePath = ".\\src\\main\\resources\\language";
+
+
+    public static String getImageText(BufferedImage image, Rectangle rectangle){
+        String subImagePath = getSubImage(image, rectangle);
+        String imageText = getImageText(subImagePath);
+        new File(subImagePath).delete();
+        return imageText;
+    }
 
     public static String getImageText(String imagePath){
 
@@ -25,8 +37,8 @@ public class Image {
 
         String imageText = "";
         File imageFile = new File(imagePath);
-        ITesseract instance = new Tesseract();  // JNA Interface Mapping
-        instance.setDatapath(".\\src\\main\\resources\\language"); // replace with your tessdata path
+        Tesseract instance = new Tesseract();  // JNA Interface Mapping
+        instance.setDatapath(languagePath); // replace with your tessdata path
         instance.setTessVariable("user_defined_dpi", String.valueOf(imageResolution)); //sets the resolution
 
         //Handling Multiple Language
@@ -49,7 +61,7 @@ public class Image {
      * @param rectangle : The rectangle objects.
      * @return result {@link BufferedImage} Sub Image extracted based on rectangle
      */
-    public static String getSubImage(Rectangle rectangle, BufferedImage image){
+    public static String getSubImage(BufferedImage image,Rectangle rectangle){
         String subImagePath = "";
         int x = rectangle.getMinPoint().x;
         int y = rectangle.getMinPoint().y;

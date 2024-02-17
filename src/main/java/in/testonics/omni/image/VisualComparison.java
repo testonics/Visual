@@ -30,7 +30,7 @@ public class VisualComparison {
     /**
      * Expected image for comparison
      */
-    private final BufferedImage expected;
+    private BufferedImage expected;
 
     /**
      * Actual image for comparison
@@ -160,52 +160,44 @@ public class VisualComparison {
     private int imageResolution = 70;
 
     /**
+     * Extracts the text from failed area, default true
+     */
+    private boolean extractText = false;
+
+
+    /**
+     * Path of the language file to extract text
+     */
+    private String language = "";
+
+    /**
      * Sets the image text mismatches.
      */
     private Map<String,String> mapMismatch = new HashMap<>();
-
-    /**
-     * Create a new instance of {@link VisualComparison} that can compare the given images.
-     *
-     * @param expected expected image to be compared
-     * @param actual   actual image to be compared
-     */
-    public VisualComparison(String expected, String actual) {
-        this(VisualComparisonUtil.readImageFromResources(expected),
-                VisualComparisonUtil.readImageFromResources(actual),
-                null);
-    }
-
-    /**
-     * Create a new instance of {@link VisualComparison} that can compare the given images.
-     *
-     * @param expected    expected image to be compared
-     * @param actual      actual image to be compared
-     * @param destination destination to save the result. If null, the result is shown in the UI.
-     */
-    public VisualComparison(BufferedImage expected, BufferedImage actual, File destination) {
-        this.expected = expected;
-        this.actual = actual;
-        this.destination = destination;
-        differenceConstant = calculateDifferenceConstant();
-    }
-
-    /**
-     * Create a new instance of {@link VisualComparison} that can compare the given images.
-     *
-     * @param expected expected image to be compared
-     * @param actual   actual image to be compared
-     */
-    public VisualComparison(BufferedImage expected, BufferedImage actual) {
-        this(expected, actual, null);
-    }
 
     /**
      * Draw rectangles which cover the regions of the difference pixels.
      *
      * @return the result of the drawing.
      */
-    public VisualComparisonResult compareImages() {
+
+    public VisualComparison(){
+        this.destination = new File(".\\results.png");
+        this.language = ".\\src\\main\\resources\\language";
+    }
+
+    public VisualComparisonResult compareImages(File expected, File actual) {
+        return compareImages(expected.getAbsolutePath(),actual.getAbsolutePath());
+    }
+
+    public VisualComparisonResult compareImages(String expected, String actual) {
+        return compareImages(VisualComparisonUtil.readImageFromResources(expected), VisualComparisonUtil.readImageFromResources(actual));
+    }
+
+    public VisualComparisonResult compareImages(BufferedImage expected, BufferedImage actual) {
+        this.expected = expected;
+        this.actual = actual;
+        differenceConstant = calculateDifferenceConstant();
 
         // check that the images have the same size
         if (isImageSizesNotEqual(expected, actual)) {
@@ -427,14 +419,17 @@ public class VisualComparison {
      * @return result {@link BufferedImage} with drawn rectangles.
      */
     private void compareText(List<Rectangle> rectangles) {
-        //Save the failed area as a new file and extracts the text
-        for(Rectangle rectangle: rectangles){
-            Image.imageResolution = this.imageResolution;
-            String subImageActual = Image.getSubImage(rectangle, actual);
-            String subImageExpected = Image.getSubImage(rectangle, expected);
-            String imageTextActual = Image.getImageText(subImageActual);
-            String imageTextExpected = Image.getImageText(subImageExpected);
-            mapMismatch.put(subImageActual,"Expected : " + imageTextExpected + " | " + "Actual : " + imageTextActual);
+        if (extractText) {
+            Image.languagePath = language;
+            int counter = 0;
+            //Save the failed area as a new file and extracts the text
+            for (Rectangle rectangle : rectangles) {
+                Image.imageResolution = this.imageResolution;
+                String imageTextActual = Image.getImageText(actual, rectangle);
+                String imageTextExpected = Image.getImageText(expected, rectangle);
+                mapMismatch.put(String.valueOf(counter), "Expected : " + imageTextExpected + " | " + "Actual : " + imageTextActual);
+                counter++;
+            }
         }
     }
 
@@ -758,5 +753,15 @@ public class VisualComparison {
 
     public Map<String,String> getImageTextMismatch() {
         return this.mapMismatch;
+    }
+
+    public VisualComparison setLanguagePath(String language) {
+        this.language = language;
+        return this;
+    }
+
+    public VisualComparison setExtractImageFlag(Boolean flag) {
+        this.extractText = flag;
+        return this;
     }
 }

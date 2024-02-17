@@ -14,26 +14,27 @@ Published on Maven Central that compares 2 images with the same sizes and shows 
 ## Configuration
 All these configurations can be updated based on your needs.
 
-| *Property* | *Description* |
-| --- | --- |
-| `threshold` | The threshold which means the max distance between non-equal pixels. Could be changed according size and requirements to the image. |
-| `rectangleLineWidth` | Width of the line that is drawn the rectangle. |
-| `destination` | File of the result destination. |
-| `minimalRectangleSize` | The number of the minimal rectangle size. Count as (width x height). By default it's 1. |
+| *Property* | *Description*                                                                                                                                                                      |
+| --- |------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `threshold` | The threshold which means the max distance between non-equal pixels. Could be changed according size and requirements to the image.                                                |
+| `rectangleLineWidth` | Width of the line that is drawn the rectangle.                                                                                                                                     |
+| `destination` | File of the result destination.                                                                                                                                                    |
+| `minimalRectangleSize` | The number of the minimal rectangle size. Count as (width x height). By default it's 1.                                                                                            |
 | `maximalRectangleCount` | Maximal count of the Rectangles, which would be drawn. It means that would get first x biggest rectangles. Default value is -1, that means that all the rectangles would be drawn. |
-| `pixelToleranceLevel` | Level of the pixel tolerance. By default it's 0.1 -> 10% difference. The value can be set from 0.0 to 0.99. |
-| `excludedAreas` | ExcludedAreas contains a List of Rectangles to be ignored when comparing images. |
-| `drawExcludedRectangles` | Flag which says draw excluded rectangles or not. |
-| `fillExcludedRectangles` | Flag which says fill excluded rectangles or not. |
-| `percentOpacityExcludedRectangles` | The desired opacity of the excluded rectangle fill. |
-| `fillDifferenceRectangles` | Flag which says fill difference rectangles or not. |
-| `percentOpacityDifferenceRectangles` | The desired opacity of the difference rectangle fill. |
-| `allowingPercentOfDifferentPixels` | The percent of the allowing pixels to be different to stay MATCH for comparison. E.g. percent of the pixels, which would ignore in comparison. Value can be from 0.0 to 100.00 |
-| `differenceRectangleColor` | Rectangle color of image difference. By default, it's red. |
-| `excludedRectangleColor` | Rectangle color of excluded part. By default, it's green. |
-| `imageResizeFlag` | Resize the image equal to expected image before comparison . Default to False |
-| `imageResolution` | Sets the image resolution. Default to 70 |
-
+| `pixelToleranceLevel` | Level of the pixel tolerance. By default it's 0.1 -> 10% difference. The value can be set from 0.0 to 0.99.                                                                        |
+| `excludedAreas` | ExcludedAreas contains a List of Rectangles to be ignored when comparing images.                                                                                                   |
+| `drawExcludedRectangles` | Flag which says draw excluded rectangles or not.                                                                                                                                   |
+| `fillExcludedRectangles` | Flag which says fill excluded rectangles or not.                                                                                                                                   |
+| `percentOpacityExcludedRectangles` | The desired opacity of the excluded rectangle fill.                                                                                                                                |
+| `fillDifferenceRectangles` | Flag which says fill difference rectangles or not.                                                                                                                                 |
+| `percentOpacityDifferenceRectangles` | The desired opacity of the difference rectangle fill.                                                                                                                              |
+| `allowingPercentOfDifferentPixels` | The percent of the allowing pixels to be different to stay MATCH for comparison. E.g. percent of the pixels, which would ignore in comparison. Value can be from 0.0 to 100.00     |
+| `differenceRectangleColor` | Rectangle color of image difference. By default, it's red.                                                                                                                         |
+| `excludedRectangleColor` | Rectangle color of excluded part. By default, it's green.                                                                                                                          |
+| `imageResizeFlag` | Resize the image equal to expected image before comparison . Default to False                                                                                                      |
+| `imageResolution` | Sets the image resolution. Default to 70                                                                                                                                           |
+| `extractText` | Sets the flag to do textucal validation. Default to false                                                                                                                          |
+| `language` | Required if extractText flag is True, download the file for the language and sets the path                                                                                         |
 
 ## Usage
 
@@ -53,42 +54,51 @@ compile 'in.testonics.omni:visual:1.0.0'
 #### To compare two images programmatically
 ##### Default way to compare two images looks like:
 ```java
-        //load images to be compared:
-        BufferedImage expectedImage = VisualComparisonUtil.readImageFromResources("expected.png");
-        BufferedImage actualImage = VisualComparisonUtil.readImageFromResources("actual.png");
+        //Sets the object of Visual Comparison
+        VisualComparison visualComparison = new VisualComparison();
 
-        //Create VisualComparison object and compare the images.
-        VisualComparisonResult visualComparisonResult = new VisualComparison(expectedImage, actualImage).compareImages();
-        
-        //Check the result
-        assertEquals(VisualComparisonState.MATCH, visualComparisonResult.getImageComparisonState());
+        //By default, result file will be saved at root location of the project
+        File file1 = new File(".\\ImageExpected.png");
+        File file2 = new File(".\\ImageActual.png");
+        VisualComparisonResult visualComparisonResult = visualComparison.compareImages(file1, file2);
 ```
 
-##### Save result image
-To save result image, can be used two ways:
-1. add a file to save to constructor. ImageComparison will save the result image in this case.
+##### Save result image at custom location
+Use the setDestination method of VisualComparison
 ```java
-        //load images to be compared:
-        BufferedImage expectedImage = VisualComparisonUtil.readImageFromResources("expected.png");
-        BufferedImage actualImage = VisualComparisonUtil.readImageFromResources("actual.png");
+        //Sets the object of Visual Comparison
+        VisualComparison visualComparison = new VisualComparison();
+
+        //Optional : If not set, result file will be saved at root location with the name "results.png"
+        visualComparison.setDestination(new File(".\\target\\results.png"));
         
-        // where to save the result (leave null if you want to see the result in the UI)
-        File resultDestination = new File( "result.png" );
-
-        //Create VisualComparison object with result destination and compare the images.
-        VisualComparisonResult visualComparisonResult = new VisualComparison(expectedImage, actualImage, resultDestination).compareImages();
+        File file1 = new File(".\\ImageExpected.png");
+        File file2 = new File(".\\ImageActual.png");
+        VisualComparisonResult visualComparisonResult = visualComparison.compareImages(file1, file2);
 ```
-2. execute ImageComparisonUtil.saveImage static method
+
+##### Enable Textual Comparison
+2. Set the extractImage flag as True and Set the path of the language file
 ```java
-        //load images to be compared:
-        BufferedImage expectedImage = VisualComparisonUtil.readImageFromResources("expected.png");
-        BufferedImage actualImage = VisualComparisonUtil.readImageFromResources("actual.png");
+        //Sets the object of Visual Comparison
+        VisualComparison visualComparison = new VisualComparison();
 
-        //Create ImageComparison object with result destination and compare the images.
-        VisualComparisonResult visualComparisonResult = new VisualComparison(expectedImage, actualImage).compareImages();
+        //Optional : If not set, result file will be saved at root location with the name "results.png"
+        visualComparison.setDestination(new File(".\\target\\results.png"));
+        visualComparison.setResizeImage(true);
 
-        //Image can be saved after comparison, using VisualComparisonUtil.
-        VisualComparisonUtil.saveImage(resultDestination, visualComparisonResult.getResult()); 
+        //Set below parameters if textual comparison is required
+        visualComparison.setExtractImageFlag(true);
+        //Download the language file from the link and set the folder path
+        visualComparison.setLanguagePath(".\\language");
+
+        File file1 = new File(".\\ImageExpected.png");
+        File file2 = new File(".\\ImageActual.png");
+        VisualComparisonResult visualComparisonResult = visualComparison.compareImages(file1, file2);
+
+        //Print the results as needed
+        System.out.println("Percentile Mismatch : " + visualComparisonResult.getDifferencePercent());
+        System.out.println("Textual Mismatch : " + visualComparisonResult.getMismatch()); 
 ```
 
 ## Demo
