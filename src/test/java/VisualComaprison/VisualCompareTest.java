@@ -9,7 +9,7 @@ import java.io.File;
 public class VisualCompareTest {
 
     @Test
-    public void main() throws Exception {
+    public void main() {
         //Sets the object of Visual Comparison
         VisualComparison visualComparison = new VisualComparison();
 
@@ -20,10 +20,10 @@ public class VisualCompareTest {
         //Set below parameters if textual comparison is required
         visualComparison.setExtractImageFlag(true);
         //Download the language file from the link and set the folder path
-        visualComparison.setLanguagePath(".\\language");
+        visualComparison.setLanguagePath(".\\src\\main\\resources\\language");
 
-        File file1 = new File(".\\ImageExpected.png");
-        File file2 = new File(".\\ImageActual.png");
+        File file1 = new File(".\\src\\test\\resources\\TestData\\ImageExpected.png");
+        File file2 = new File(".\\src\\test\\resources\\TestData\\ImageActual.png");
         VisualComparisonResult visualComparisonResult = visualComparison.compareImages(file1, file2);
 
         //Print the results as needed

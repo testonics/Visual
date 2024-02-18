@@ -1,6 +1,12 @@
 # Release Notes
 
-## 1.0
+## 1.0.1
+
+*   Code optimization
+
+*   Added the support for textual comparison in English language
+
+## 1.0.0
 *   The program in Java that compares any 2 images and shows the differences visually by drawing rectangles.*
 
 *   Pixels (with the same coordinates in two images) can be visually similar, but have
