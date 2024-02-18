@@ -178,9 +178,7 @@ public class VisualComparison {
     /**
      * Draw rectangles which cover the regions of the difference pixels.
      *
-     * @return the result of the drawing.
      */
-
     public VisualComparison(){
         this.destination = new File(".\\results.png");
         this.language = ".\\src\\main\\resources\\language";
