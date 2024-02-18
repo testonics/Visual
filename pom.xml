@@ -6,12 +6,12 @@
 
     <groupId>in.testonics.omni</groupId>
     <artifactId>visual</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <packaging>jar</packaging>
 
     <!--Project Details-->
     <name>Visual</name>
-    <description>Compares 2 given images visually and extract the data from the images</description>
+    <description>Textual and Visual Comparison Of Images</description>
     <url>https://visual.testonics.in/</url>
 
     <licenses>
