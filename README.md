@@ -137,4 +137,5 @@ Can be found in [RELEASE_NOTES](RELEASE_NOTES.md).
 Please, follow [Code of Conduct](CODE_OF_CONDUCT.md) page.
 
 #### Also if you're interesting - see my other repositories
-*   [Keep Alive](https://github.com/testoncis/keep-alive) - Keeps the computer awake
+*   [ACE](https://ace.testonics.in/) - Compares 2 given files. Supported formats are PDF, XLS(X), CSV, JSON, TXT
+*   [Keep-Alive](https://keepalive.testonics.in/) - Keeps the device awake (stops from sleeping)
