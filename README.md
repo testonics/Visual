@@ -43,12 +43,12 @@ All these configurations can be updated based on your needs.
 <dependency>
     <groupId>in.testonics.omni</groupId>
     <artifactId>visual</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
 </dependency>
 ```
 #### Gradle
 ```groovy
-compile 'in.testonics.omni:visual:1.0.0'
+compile 'in.testonics.omni:visual:1.0.1'
 ```
 
 #### To compare two images programmatically
