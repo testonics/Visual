@@ -35,6 +35,8 @@ All these configurations can be updated based on your needs.
 | `imageResolution` | Sets the image resolution. Default to 70                                                                                                                                           |
 | `extractText` | Sets the flag to do textucal validation. Default to false                                                                                                                          |
 | `language` | Required if extractText flag is True, download the file for the language and sets the path                                                                                         |
+| `coordinatesToExcludeFilePath` | Path of the file containing the coordinates to exclude from validation. All included if left blank                                                                                 |
+| `printCoordinates` | Prints the coordinates of failures on image if true. By default false                                                                                                              |
 
 ## Usage
 
@@ -43,12 +45,12 @@ All these configurations can be updated based on your needs.
 <dependency>
     <groupId>in.testonics.omni</groupId>
     <artifactId>visual</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
 </dependency>
 ```
 #### Gradle
 ```groovy
-compile 'in.testonics.omni:visual:1.0.1'
+compile 'in.testonics.omni:visual:1.0.2'
 ```
 
 #### To compare two images programmatically

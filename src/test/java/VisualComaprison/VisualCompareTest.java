@@ -21,6 +21,8 @@ public class VisualCompareTest {
         visualComparison.setExtractImageFlag(true);
         //Download the language file from the link and set the folder path
         visualComparison.setLanguagePath(".\\src\\main\\resources\\language");
+        visualComparison.setPrintCoordinates(false);
+        visualComparison.setCoordinatesExcludeFilePath(".\\src\\test\\resources\\TestData\\CoordinatesToExclude.csv");
 
         File file1 = new File(".\\src\\test\\resources\\TestData\\ImageExpected.png");
         File file2 = new File(".\\src\\test\\resources\\TestData\\ImageActual.png");

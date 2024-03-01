@@ -5,6 +5,7 @@ import in.testonics.omni.image.model.Image;
 import in.testonics.omni.image.model.VisualComparisonResult;
 import in.testonics.omni.image.model.VisualComparisonState;
 import in.testonics.omni.image.model.Rectangle;
+import in.testonics.omni.utils.FileUtils;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -15,6 +16,7 @@ import java.util.stream.Collectors;
 
 import static in.testonics.omni.image.VisualComparisonUtil.getDifferencePercent;
 import static java.util.Collections.emptyList;
+import static java.util.Collections.list;
 
 /**
  * Main class for comparison images.
@@ -26,6 +28,16 @@ public class VisualComparison {
      * Could be changed according to the size and requirements of the image.
      */
     private int threshold = 5;
+
+    /**
+     * Expected image path for comparison
+     */
+    private String expectedImagePath;
+
+    /**
+     * Actual image path for comparison
+     */
+    private String actualImagePath;
 
     /**
      * Expected image for comparison
@@ -164,6 +176,15 @@ public class VisualComparison {
      */
     private boolean extractText = false;
 
+    /**
+     * Extracts the text from failed area, default true
+     */
+    private String coordinatesToExcludeFilePath = "";
+
+    /**
+     * prints the failure coordinates on result image, default false
+     */
+    private boolean printCoordinates = false;
 
     /**
      * Path of the language file to extract text
@@ -189,6 +210,8 @@ public class VisualComparison {
     }
 
     public VisualComparisonResult compareImages(String expected, String actual) {
+        this.expectedImagePath = expected;
+        this.actualImagePath = actual;
         return compareImages(VisualComparisonUtil.readImageFromResources(expected), VisualComparisonUtil.readImageFromResources(actual));
     }
 
@@ -400,14 +423,56 @@ public class VisualComparison {
         BufferedImage resultImage = VisualComparisonUtil.deepCopy(actual);
 
         //Save the failed area as a new file and extracts the text
-        compareText(rectangles);
+        List<Rectangle> rectanglesToDraw = excludeRectangles(rectangles);
+        compareText(rectanglesToDraw);
 
         Graphics2D graphics = preparedGraphics2D(resultImage);
 
         drawExcludedRectangles(graphics);
-        drawRectanglesOfDifferences(rectangles, graphics);
+        drawRectanglesOfDifferences(rectanglesToDraw, graphics);
 
         return resultImage;
+    }
+
+    private List<String> getListOfCoordinatesToExclude(){
+        List<String> listCoordinatesToExclude = new ArrayList<>();
+        try {
+            Map<String,List<String>> mapCoordinatesToExclude = FileUtils.ConvertCsvToMap(coordinatesToExcludeFilePath);
+            if (mapCoordinatesToExclude.containsKey("0") && mapCoordinatesToExclude.containsKey("1")){
+                List<String> listOfCoordinates = mapCoordinatesToExclude.get("1");
+                List<String> listOfImages = mapCoordinatesToExclude.get("0");
+                int coordinatesCount = listOfCoordinates.size();
+                for (int i= 0;i<coordinatesCount;i++){
+                    listCoordinatesToExclude.add(listOfImages.get(i)+ "-" + listOfCoordinates.get(i));
+                }
+            }
+        } catch (Exception e){
+            System.out.println("Exception occurred while fetching the coordinates to excluding. Going ahead including all the coordinates");
+            e.printStackTrace();
+        }
+        return listCoordinatesToExclude;
+    }
+
+    private List<Rectangle> excludeRectangles(List<Rectangle> rectangles){
+
+        if (coordinatesToExcludeFilePath.equals(""))
+            return rectangles;
+
+        List<Rectangle> rectanglesToInclude = new ArrayList<>();
+        //Fetches the list of coordinates to be excluded from the csv file
+        List<String> listCoordinatesToExclude = getListOfCoordinatesToExclude();
+        String imageName = new File(expectedImagePath).getName();
+
+        for (Rectangle rectangle : rectangles) {
+            String coordinates = rectangle.getMinPoint().x + "-" + rectangle.getMinPoint().y;
+            String coordinateToExclude  = imageName + "-" + coordinates;
+            //Ignoring the validation if coordinates are found in the exclusion list
+            if(!listCoordinatesToExclude.contains(coordinateToExclude)){
+                rectanglesToInclude.add(rectangle);
+            }
+
+        }
+        return rectanglesToInclude;
     }
 
     /**
@@ -419,14 +484,13 @@ public class VisualComparison {
     private void compareText(List<Rectangle> rectangles) {
         if (extractText) {
             Image.languagePath = language;
-            int counter = 0;
             //Save the failed area as a new file and extracts the text
             for (Rectangle rectangle : rectangles) {
                 Image.imageResolution = this.imageResolution;
+                String coordinates = rectangle.getMinPoint().x + "-" + rectangle.getMinPoint().y;
                 String imageTextActual = Image.getImageText(actual, rectangle);
                 String imageTextExpected = Image.getImageText(expected, rectangle);
-                mapMismatch.put(String.valueOf(counter), "Expected : " + imageTextExpected + " | " + "Actual : " + imageTextActual);
-                counter++;
+                mapMismatch.put(coordinates, "Expected : " + imageTextExpected + " | " + "Actual : " + imageTextActual);
             }
         }
     }
@@ -505,12 +569,18 @@ public class VisualComparison {
      * @param rectangles the collection of the {@link Rectangle}.
      */
     private void draw(Graphics2D graphics, List<Rectangle> rectangles) {
+
         rectangles.forEach(rectangle -> graphics.drawRect(
                 rectangle.getMinPoint().x,
                 rectangle.getMinPoint().y,
                 rectangle.getWidth() - 1,
                 rectangle.getHeight() - 1)
         );
+
+        if (printCoordinates){
+            rectangles.forEach(rectangle -> graphics.drawString(rectangle.getMinPoint().x + "-" + rectangle.getMinPoint().y,rectangle.getMinPoint().x,rectangle.getMinPoint().y)
+            );
+        }
     }
 
     /**
@@ -762,4 +832,15 @@ public class VisualComparison {
         this.extractText = flag;
         return this;
     }
+
+    public VisualComparison setCoordinatesExcludeFilePath(String filePath) {
+        this.coordinatesToExcludeFilePath = filePath;
+        return this;
+    }
+
+    public VisualComparison setPrintCoordinates(Boolean flag) {
+        this.printCoordinates = flag;
+        return this;
+    }
+
 }
